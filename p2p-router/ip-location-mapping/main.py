@@ -1,6 +1,13 @@
 import geoip2.database
 
+ip = "104.16.37.47"
 with geoip2.database.Reader('./database/GeoLite2-ASN_20210504/GeoLite2-ASN.mmdb') as reader:
-    response = reader.asn("104.16.37.47")
-    print(response.autonomous_system_number)
-# TODO: get more info about peer like country, ISP, distance
+    asn = reader.asn(ip)
+    reader.close()
+with geoip2.database.Reader('./database/GeoLite2-City_20210427/GeoLite2-City.mmdb') as reader:
+    city = reader.city(ip)
+    reader.close()
+with geoip2.database.Reader('./database/GeoLite2-Country_20210427/GeoLite2-Country.mmdb') as reader:
+    country = reader.country(ip)
+    reader.close()
+print("Network: {}\t ASN: {}\t City: {}\t Country: {}".format(asn.network, asn.autonomous_system_number, city.city.name, country.country.iso_code))
