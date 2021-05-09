@@ -93,8 +93,12 @@ def sameASNPeers(hostASN):
     WHERE asn = {hostASN}
     GROUP BY asn
     """)
-
-    result = c.fetchall()
+    try:
+        result = c.fetchall()
+        if len(result) != 1:
+            result = [(0,)]
+    except:
+        result = [(0,)]
     commitAndClose(conn)
 
     return result[0][0]
@@ -108,7 +112,12 @@ def sameISPPeers(hostISP):
     GROUP BY isp
     """)
 
-    result = c.fetchall()
+    try:
+        result = c.fetchall()
+        if len(result) != 1:
+            result = [(0,)]
+    except:
+        result = [(0,)]
     commitAndClose(conn)
 
     return result[0][0]
@@ -122,7 +131,12 @@ def sameCountryPeers(hostCountry):
     GROUP BY country_code
     """)
 
-    result = c.fetchall()
+    try:
+        result = c.fetchall()
+        if len(result) != 1:
+            result = [(0,)]
+    except:
+        result = [(0,)]
     commitAndClose(conn)
 
     return result[0][0]
@@ -131,10 +145,10 @@ def commitAndClose(conn):
     conn.commit()
     conn.close()
 
-def dropTable(table_name):
+def dropTable():
     conn = sqlite3.connect(f'{dbFile}', uri=False)
     c = conn.cursor()
 
-    c.execute(f"DROP TABLE {table_name}")
+    c.execute(f"DROP TABLE {tableName}")
 
     commitAndClose(conn)

@@ -1,4 +1,6 @@
 import sqlite3
+import geoip2
+import computeLimit
 
 dbFile = "p2p-router.db"
 tableName = "bandwidth"
@@ -9,7 +11,7 @@ def init():
 
     c.execute(f"""CREATE TABLE {tableName} (
         ip TEXT,
-        bandwidth INTEGER        
+        bandwidth REAL      
     )
     """)
 
@@ -36,13 +38,14 @@ def isRowExisted(cursor, ip):
     
     return False
 
-def addOne(ip, bandwidth):
+def addOne(ip):
     conn = sqlite3.connect(f'{dbFile}')
     c = conn.cursor()
+    limitBand = computeLimit.calLimitBand(ip)
 
     if not isRowExisted(c, ip):
         c.execute(f"""INSERT INTO {tableName} VALUES (
-                '{ip}', '{bandwidth}'
+                '{ip}', {limitBand}
             )"""
         )
 
@@ -53,10 +56,10 @@ def commitAndClose(conn):
     conn.commit()
     conn.close()
 
-def dropTable(table_name):
+def dropTable():
     conn = sqlite3.connect(f'{dbFile}', uri=False)
     c = conn.cursor()
 
-    c.execute(f"DROP TABLE {table_name}")
+    c.execute(f"DROP TABLE {tableName}")
 
     commitAndClose(conn)

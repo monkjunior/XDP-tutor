@@ -1,4 +1,4 @@
-import peers
+import peers, bandwidth
 import socket
 import sqlite3
 import geoip2.database
@@ -49,16 +49,25 @@ def ipInfo(peerIP):
 
 def addPeerToDB(peerIP):
     hostIP = getMyPublicIP()
-    network, asn, cc, distance, isp = ipInfo(peerIP, hostIP)
+    network, asn, cc, distance, isp = ipInfo(peerIP)
     try:
         peers.addOne(peerIP, network, asn, cc, distance, isp)
     except sqlite3.OperationalError:
         peers.init()
+    except Exception as e:
+        print(f"failed to add record to peers table: {e}")
+
+    try:
+        bandwidth.addOne(peerIP)
+    except sqlite3.OperationalError:
+        bandwidth.init()
+    except Exception as e:
+        print(f"failed to add record to bandwidth table: {e}")
 
 def deletePeerData():
     try:
-        tableName = "peers"
-        peers.dropTable(f"{tableName}")
+        peers.dropTable()
+        bandwidth.dropTable()
         print(f"delete table {tableName} successfully")
     except Exception as e:
         print(f"Exception {e}: failed to delete table {tableName}")

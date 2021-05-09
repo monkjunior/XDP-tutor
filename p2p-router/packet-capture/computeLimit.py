@@ -12,16 +12,16 @@ alpha3 = 2000
 B = 2000000
 minB = 200
 
-myPublicIP = imap.getMyPublicIP()
-_, asn, isp, countryCode, _ = imap.ipInfo(myPublicIP)
-
 def nearByPeers(asn, isp, countryCode):
+    _, asn, isp, countryCode, _ = imap.ipInfo(imap.getMyPublicIP())
     return peers.sameASNPeers(asn), peers.sameISPPeers(isp), peers.sameCountryPeers(countryCode)
 
 def printNearByPeers(asn, isp, countryCode):
+    _, asn, isp, countryCode, _ = imap.ipInfo(imap.getMyPublicIP())
     print(tabulate([[peers.sameASNPeers(asn), peers.sameISPPeers(isp), peers.sameCountryPeers(countryCode)]], headers=['Same ASN', 'Same ISP', 'Same Country']))
 
 def calLimitBand(peerIP):
+    network, asn, isp, countryCode, distance = imap.ipInfo(imap.getMyPublicIP())
     n1, n2, n3 = nearByPeers(asn, isp, countryCode)
     _, pASN, pISP, pCC, pDist = imap.ipInfo(peerIP)
     f1 = 0 if pASN == asn else alpha1
@@ -34,13 +34,6 @@ def calLimitBand(peerIP):
             f3 = alpha3 + pDist
     logicalDistance = f1*math.exp(-1/(n1 + e)) + f2*math.exp(-1/(n1 + e)) + f3*math.exp(-1/(n3 + e))
     bandLimit = B/(logicalDistance + e1)
-    print(tabulate([[n1, n2, n3, f1, f2, f3, pDist, logicalDistance, bandLimit]], headers=['n1', 'n2', 'n3', 'f1', 'f2', 'f3', 'pD', 'lD', 'bw']))
+    # print(tabulate([[n1, n2, n3, f1, f2, f3, pDist, logicalDistance, bandLimit]], headers=['n1', 'n2', 'n3', 'f1', 'f2', 'f3', 'pD', 'lD', 'bw']))
     return bandLimit
 
-
-def calPeerLimit(peerIP, band=minB):
-    return band
-
-
-printNearByPeers(asn, isp, countryCode)
-calLimitBand("123.30.151.84")
