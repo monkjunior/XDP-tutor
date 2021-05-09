@@ -11,7 +11,7 @@ struct ip_key {
 	__u8 family;
 };
 
-BPF_TABLE("hash", struct ip_key, long, counters, 100);
+BPF_TABLE("hash", struct ip_key, long, counters, 1024);
 int xdp_ip_counter(struct xdp_md *ctx){
 	struct ip_key key = {};
 	long default_value = 0;
@@ -38,8 +38,7 @@ int xdp_ip_counter(struct xdp_md *ctx){
 	value = counters.lookup_or_try_init(&key, &default_value);
 	if (value) {
 		*value += 1;
-		return XDP_PASS;
 	}
 
-	return XDP_DROP;
+	return XDP_PASS;
 }
