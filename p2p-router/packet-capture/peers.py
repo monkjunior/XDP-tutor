@@ -4,7 +4,7 @@ dbFile = "p2p-router.db"
 tableName = "peers"
 
 def init():
-    conn = sqlite3.connect(f'{dbFile}')
+    conn = sqlite3.connect(f'file:{dbFile}?mode=rw', uri=True)
     c = conn.cursor()
 
     c.execute(f"""CREATE TABLE {tableName} (
@@ -152,3 +152,5 @@ def dropTable():
     c.execute(f"DROP TABLE {tableName}")
 
     commitAndClose(conn)
+    print(f"delete table {tableName} successfully")
+

@@ -1,4 +1,4 @@
-import peers, bandwidth
+import peers
 import socket
 import sqlite3
 import geoip2.database
@@ -6,8 +6,13 @@ from requests import get
 from tabulate import tabulate
 from math import sin, cos, sqrt, atan2, radians
 
+def getMyPublicIP():
+    ip = get('https://api.ipify.org').text
+    return ip
+
+hostIP = getMyPublicIP()
+
 def distanceFromIP(peerIP):
-    hostIP = getMyPublicIP()
     with geoip2.database.Reader('../database/GeoLite2-City_20210427/GeoLite2-City.mmdb') as reader:
         peerCity = reader.city(peerIP)
         hostCity = reader.city(hostIP)
@@ -48,7 +53,6 @@ def ipInfo(peerIP):
     return asn.network, asn.autonomous_system_number, asn.autonomous_system_organization, country.country.iso_code, distanceFromIP(peerIP)
 
 def addPeerToDB(peerIP):
-    hostIP = getMyPublicIP()
     network, asn, cc, distance, isp = ipInfo(peerIP)
     try:
         peers.addOne(peerIP, network, asn, cc, distance, isp)
@@ -57,24 +61,11 @@ def addPeerToDB(peerIP):
     except Exception as e:
         print(f"failed to add record to peers table: {e}")
 
-    try:
-        bandwidth.addOne(peerIP)
-    except sqlite3.OperationalError:
-        bandwidth.init()
-    except Exception as e:
-        print(f"failed to add record to bandwidth table: {e}")
-
 def deletePeerData():
     try:
         peers.dropTable()
-        bandwidth.dropTable()
-        print(f"delete table {tableName} successfully")
     except Exception as e:
-        print(f"Exception {e}: failed to delete table {tableName}")
-
-def getMyPublicIP():
-    ip = get('https://api.ipify.org').text
-    return ip
+        print(f"Exception {e}: failed to delete table")
 
 
 def getMyPrivateIP():
