@@ -42,22 +42,24 @@ func runCmd(cmd *cobra.Command, args []string) {
 	}
 
 	type Peers struct {
-		Ip           string
-		Network      string
-		Asn          int
-		Isp          string
-		Country_code string
-		Distance     float32
+		Ip          string
+		Network     string
+		Asn         int
+		Isp         string
+		CountryCode string
+		Distance    float32
+	}
+	type Host struct {
+		Ip          string
+		Network     string
+		Asn         int
+		Isp         string
+		CountryCode string
+		Distance    float32
 	}
 
-	err = db.AutoMigrate(&Peers{})
-	if err != nil {
-		fmt.Printf("Error while running auto migrate to SQLite db %v", err)
-		return
-	}
+	var host Host
+	db.Table("host").First(&host)
 
-	var peer Peers
-	db.First(&peer)
-
-	fmt.Println(peer)
+	fmt.Printf("%+v", host)
 }

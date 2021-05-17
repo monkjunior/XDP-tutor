@@ -1,4 +1,4 @@
-module github.com/vungocson998/XDP-tutor/p2p-router/packet-capture/compute
+module github.com/vu-ngoc-son/XDP-tutor/p2p-router/packet-capture/compute
 
 go 1.16
 
