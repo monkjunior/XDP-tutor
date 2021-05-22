@@ -13,6 +13,5 @@ func New(db gorm.DB) (myHost storage.Hosts) {
 		fmt.Printf("Error while init host %v\n", result.Error)
 		return
 	}
-	fmt.Printf("My host %v\n", myHost)
 	return myHost
 }

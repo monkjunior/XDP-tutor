@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -48,6 +50,8 @@ func runServeCmd(serveCmd *cobra.Command, _ []string) {
 	signals := make(chan os.Signal, 1)
 	done := make(chan bool)
 
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+
 	go func() {
 		for {
 			select {
@@ -66,5 +70,8 @@ func runServeCmd(serveCmd *cobra.Command, _ []string) {
 		done <- true
 	}()
 
+	defer func() {
+		fmt.Println("Shutting down gracefully ...")
+	}()
 	_ = <-done
 }
