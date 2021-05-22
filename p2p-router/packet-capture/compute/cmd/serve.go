@@ -2,14 +2,20 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/vu-ngoc-son/XDP-tutor/p2p-router/packet-capture/compute/internal/storage"
+	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/vu-ngoc-son/XDP-tutor/p2p-router/packet-capture/compute/internal/calculator"
+	"github.com/vu-ngoc-son/XDP-tutor/p2p-router/packet-capture/compute/internal/storage"
 	"github.com/vu-ngoc-son/XDP-tutor/p2p-router/packet-capture/compute/internal/storage/peers"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+)
+
+var (
+	interval int64
 )
 
 // serveCmd represents the serve command
@@ -22,6 +28,8 @@ var serveCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
+
+	serveCmd.Flags().Int64Var(&interval, "interval", 60, "update db once each interval seconds")
 }
 
 func runServeCmd(serveCmd *cobra.Command, _ []string) {
@@ -36,5 +44,27 @@ func runServeCmd(serveCmd *cobra.Command, _ []string) {
 	myPeers := peers.New(*db)
 	myCalculator := calculator.New(*db, myPeers)
 
-	myCalculator.UpdatePeersLimit()
+	ticker := time.NewTicker(time.Duration(interval) * time.Second)
+	signals := make(chan os.Signal, 1)
+	done := make(chan bool)
+
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case t := <-ticker.C:
+				fmt.Println(t)
+				myCalculator.UpdatePeersLimit()
+			}
+		}
+	}()
+
+	go func() {
+		sig := <-signals
+		fmt.Println(sig)
+		done <- true
+	}()
+
+	_ = <-done
 }
