@@ -32,7 +32,7 @@ func init() {
 }
 
 func runLimitCmd(limitCmd *cobra.Command, _ []string) {
-	db, err := gorm.Open(sqlite.Open("../p2p-router.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("/home/ted/TheFirstProject/XDP-tutor/p2p-router/packet-capture/p2p-router.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Printf("Error while connecting to SQLite db %v", err)
 		return

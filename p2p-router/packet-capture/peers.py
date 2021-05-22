@@ -7,7 +7,7 @@ def init():
     conn = sqlite3.connect(f'file:{dbFile}?mode=rw', uri=True)
     c = conn.cursor()
 
-    c.execute(f"""CREATE TABLE {tableName} (
+    c.execute(f"""CREATE TABLE IF NOT EXISTS {tableName} (
         ip TEXT,
         network TEXT,
         asn INTEGER,

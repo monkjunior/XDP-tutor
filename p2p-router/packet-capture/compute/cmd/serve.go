@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/vu-ngoc-son/XDP-tutor/p2p-router/packet-capture/compute/internal/storage"
 
 	"github.com/spf13/cobra"
 	"github.com/vu-ngoc-son/XDP-tutor/p2p-router/packet-capture/compute/internal/calculator"
@@ -24,11 +25,13 @@ func init() {
 }
 
 func runServeCmd(serveCmd *cobra.Command, _ []string) {
-	db, err := gorm.Open(sqlite.Open("../p2p-router.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("/home/ted/TheFirstProject/XDP-tutor/p2p-router/packet-capture/p2p-router.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Printf("Error while connecting to SQLite db %v", err)
 		return
 	}
+
+	db.AutoMigrate(&storage.Peers{}, &storage.Limit{}, &storage.Hosts{})
 
 	myPeers := peers.New(*db)
 	myCalculator := calculator.New(*db, myPeers)

@@ -62,8 +62,8 @@ func (c ServiceCalculator) LimitByIP(p storage.Peers, updateDB bool) storage.Lim
 		Ip:        p.Ip,
 		Bandwidth: limit,
 	}
-	if updateDB {
 
+	if updateDB {
 		result := c.db.Model(&l).Where("ip = ?", l.Ip).Updates(&l)
 		if result.Error != nil {
 			fmt.Println("Error while update limit by ip", result.Error)
@@ -91,7 +91,6 @@ func (c ServiceCalculator) prepareArgs(p storage.Peers) (n1, n2, n3 float64, f1,
 	if !sameISP {
 		f2 = alpha2
 	}
-
 	if !sameCountry {
 		f3 = f3 + alpha3
 	}

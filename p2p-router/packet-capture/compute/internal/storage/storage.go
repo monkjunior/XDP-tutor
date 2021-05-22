@@ -1,5 +1,14 @@
 package storage
 
+type Hosts struct {
+	Ip          string
+	Network     string
+	Asn         int
+	Isp         string
+	CountryCode string
+	Distance    float64
+}
+
 type Peers struct {
 	Ip          string
 	Network     string

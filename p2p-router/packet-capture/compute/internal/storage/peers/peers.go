@@ -8,7 +8,7 @@ import (
 )
 
 type peer struct {
-	Host storage.Peers
+	Host storage.Hosts
 	db   gorm.DB
 }
 

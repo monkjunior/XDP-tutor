@@ -4,10 +4,10 @@ import time
 import socket
 import struct
 import sys
-import imap, host
+import imap, hosts
 import geoip2
 
-host.init()
+hosts.init()
 device = "wlp8s0"
 bpf = BPF(src_file="packet-capture.c")
 fn = bpf.load_func("xdp_ip_counter", BPF.XDP)
@@ -40,4 +40,4 @@ while True:
         break
 
 bpf.remove_xdp(device, 0)
-host.dropTable()
+hosts.dropTable()
