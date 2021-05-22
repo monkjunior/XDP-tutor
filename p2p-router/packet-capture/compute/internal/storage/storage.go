@@ -9,6 +9,11 @@ type Peers struct {
 	Distance    float64
 }
 
+type Limit struct {
+	Ip        string
+	Bandwidth float64
+}
+
 type PeerService interface {
 	FindByIP(IP string) Peers
 	/*
@@ -16,7 +21,7 @@ type PeerService interface {
 		n2: number of peers which have the same ISP
 		n3: number of peers which have the same Country Code
 	*/
-	FindNearBy(peer Peers) (n1, n2, n3 float64)
+	FindNearBy() (n1, n2, n3 float64)
 	/*
 		b1: equal true if peer is in the same ASN with host
 		b2: equal true if peer is in the same ISP with host

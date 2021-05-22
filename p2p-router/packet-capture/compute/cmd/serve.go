@@ -11,20 +11,19 @@ import (
 	"gorm.io/gorm"
 )
 
-var limitCmd = &cobra.Command{
-	Use:   "limit",
-	Short: "Calculate limit from ip",
-
-	Run: runCmd,
+// serveCmd represents the serve command
+var serveCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "Run a computing service",
+	Long:  `Run a computing service which will calculate limit of all peers once per minute`,
+	Run:   runServeCmd,
 }
 
 func init() {
-	rootCmd.AddCommand(limitCmd)
-
-	limitCmd.Flags().String("ip", "", "ip address that you want to calculate limit")
+	rootCmd.AddCommand(serveCmd)
 }
 
-func runCmd(limitCmd *cobra.Command, _ []string) {
+func runServeCmd(serveCmd *cobra.Command, _ []string) {
 	db, err := gorm.Open(sqlite.Open("../p2p-router.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Printf("Error while connecting to SQLite db %v", err)
@@ -32,8 +31,7 @@ func runCmd(limitCmd *cobra.Command, _ []string) {
 	}
 
 	myPeers := peers.New(*db)
+	myCalculator := calculator.New(*db, myPeers)
 
-	myCalculator := calculator.New(myPeers)
-
-	println(int64(myCalculator.LimitByIP(myPeers.FindByIP(limitCmd.Flag("ip").Value.String()))))
+	myCalculator.UpdatePeersLimit()
 }

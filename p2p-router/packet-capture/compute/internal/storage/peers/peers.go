@@ -29,11 +29,11 @@ func (p peer) FindByIP(ip string) (result storage.Peers) {
 	n2: number of peers which have the same ISP
 	n3: number of peers which have the same Country Code
 */
-func (p peer) FindNearBy(peerInfo storage.Peers) (n1, n2, n3 float64) {
+func (p peer) FindNearBy() (n1, n2, n3 float64) {
 	var r1, r2, r3 int64
-	p.db.Table("peers").Where("asn = ?", peerInfo.Asn).Count(&r1)
-	p.db.Table("peers").Where("isp = ?", peerInfo.Isp).Count(&r2)
-	p.db.Table("peers").Where("country_code = ?", peerInfo.CountryCode).Count(&r3)
+	p.db.Table("peers").Where("asn = ?", p.Host.Asn).Count(&r1)
+	p.db.Table("peers").Where("isp = ?", p.Host.Isp).Count(&r2)
+	p.db.Table("peers").Where("country_code = ?", p.Host.CountryCode).Count(&r3)
 	return float64(r1), float64(r2), float64(r3)
 }
 

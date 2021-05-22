@@ -153,4 +153,3 @@ def dropTable():
 
     commitAndClose(conn)
     print(f"delete table {tableName} successfully")
-
