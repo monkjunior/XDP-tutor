@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/iovisor/gobpf/elf"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -71,5 +72,21 @@ func main() {
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, os.Kill)
+
+	xdpStatsMap := bpf.NewTable(module.TableId("xdp_stats_map"), module)
+	xdpStatsMapConfig := xdpStatsMap.Config()
+
+	pinPath := "/sys/fs/bpf/shared/xdp_stats_map"
+	err = elf.PinObject(xdpStatsMapConfig["fd"].(int), pinPath)
+	if err != nil{
+		fmt.Fprintf(os.Stderr, "Failed to pin xdp_stats_map to %s: %v\n",pinPath, err)
+	}
+	defer func() {
+		err = os.Remove(pinPath)
+		if err != nil{
+			fmt.Fprintf(os.Stderr, "Failed to delete pinned xdp_stats_map at %s: %v\n",pinPath, err)
+		}
+	}()
+
 	<-sig
 }
