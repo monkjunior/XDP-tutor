@@ -1,24 +1,20 @@
 /* SPDX-License-Identifier: GPL-2.0 */
+#include "common_kern_user.h" /* defines: struct dataRec; */
 
-#include "common_kern_user.h" /* defines: struct datarec; */
+/* IP whitelist map stores a list of IPs which allowed to pass through XDP layer */
+BPF_TABLE("hash", int, int, IP_whitelist, 1);
 
-// Syntax: BPF_TABLE(_table_type, _key_type, _leaf_type, _name, _max_entries)
-BPF_TABLE("percpu_array", __u32, struct datarec, xdp_stats_map, XDP_ACTION_MAX);
-BPF_TABLE("hash", int, int, trigger_limit, 1);
-// SEC("xdp")
-int  xdp_prog_pass(struct xdp_md *ctx)
+int  xdp_pass_func(struct xdp_md *ctx)
 {
 	return XDP_PASS;
 }
 
-// SEC("xdp")
-int  xdp_prog_drop(struct xdp_md *ctx)
+int  xdp_drop_func(struct xdp_md *ctx)
 {
 	return XDP_DROP;
 }
 
-// SEC("xdp")
-int  xdp_prog_aborted(struct xdp_md *ctx)
+int  xdp_abort_func(struct xdp_md *ctx)
 {
 	return XDP_ABORTED;
 }
@@ -27,7 +23,7 @@ int packet_capture(struct xdp_md *ctx)
 {
 	void *data_end = (void *)(long)ctx->data_end;
 	void *data     = (void *)(long)ctx->data;
-	struct datarec *rec;
+	struct dataRec *rec;
 	__u32 key = XDP_PASS; /* XDP_PASS = 2 */
 
 	/* Lookup in kernel BPF-side return pointer to actual data record */
@@ -65,11 +61,4 @@ int packet_capture(struct xdp_md *ctx)
 	}
 
 	return XDP_PASS;
-	
-}
-
-int packet_drop(struct xdp_md *ctx)
-{
-	return XDP_DROP;
-
 }

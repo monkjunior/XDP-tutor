@@ -5,7 +5,7 @@
 #define __COMMON_KERN_USER_H
 
 /* This is the data record stored in the map */
-struct datarec {
+struct dataRec {
 	__u64 rx_packets;
 	/* Assignment#1: Add byte counters */
 	__u64 rx_bytes;

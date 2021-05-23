@@ -77,6 +77,7 @@ func main() {
 	xdpStatsMapConfig := xdpStatsMap.Config()
 
 	pinPath := "/sys/fs/bpf/shared/xdp_stats_map"
+
 	err = elf.PinObject(xdpStatsMapConfig["fd"].(int), pinPath)
 	if err != nil{
 		fmt.Fprintf(os.Stderr, "Failed to pin xdp_stats_map to %s: %v\n",pinPath, err)
