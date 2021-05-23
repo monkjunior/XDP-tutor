@@ -70,6 +70,6 @@ int packet_capture(struct xdp_md *ctx)
 
 int packet_drop(struct xdp_md *ctx)
 {
-	int isOverThreshold = 0;
+	return XDP_DROP;
 
 }
