@@ -7,8 +7,6 @@ import (
 	"os"
 	"os/signal"
 
-	"C"
-
 	bpf "github.com/iovisor/gobpf/bcc"
 )
 
@@ -50,7 +48,7 @@ func main() {
 	})
 	defer module.Close()
 
-	fn, err := module.Load("packet_drop", C.BPF_PROG_TYPE_XDP, 1, 65536)
+	fn, err := module.Load("packet_capture", C.BPF_PROG_TYPE_XDP, 1, 65536)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to load xdp prog: %v\n", err)
 		os.Exit(1)

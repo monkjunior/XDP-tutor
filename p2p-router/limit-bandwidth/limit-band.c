@@ -3,7 +3,7 @@
 #include "common_kern_user.h" /* defines: struct datarec; */
 
 // Syntax: BPF_TABLE(_table_type, _key_type, _leaf_type, _name, _max_entries)
-BPF_TABLE("percpu_array", __u32, struct datarec, xdp_stats_map, XDP_ACTION_MAX);
+BPF_TABLE("percpu_array", __u32, struct datarec, xdp_stats_map2, XDP_ACTION_MAX);
 BPF_TABLE("hash", int, int, trigger_limit, 1);
 // SEC("xdp")
 int  xdp_prog_pass(struct xdp_md *ctx)
@@ -36,7 +36,7 @@ int packet_capture(struct xdp_md *ctx)
 	 * check isn't performed here. Even-though this is a static array where
 	 * we know key lookup XDP_PASS always will succeed.
 	 */
-	rec = xdp_stats_map.lookup(&key);
+	rec = xdp_stats_map2.lookup(&key);
 	if (!rec) {
 		return XDP_ABORTED;
 	}
@@ -66,10 +66,4 @@ int packet_capture(struct xdp_md *ctx)
 
 	return XDP_PASS;
 	
-}
-
-int packet_drop(struct xdp_md *ctx)
-{
-	return XDP_DROP;
-
 }
